@@ -10,10 +10,12 @@ import { BiLogIn } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { AuthContext } from "./../Registration/AuthProvider";
 import { app } from "./../../base";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const { currentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState([]);
+  const room = useSelector((state) => state.myReducer.bookings);
 
   const getData = async () => {
     await app
@@ -34,6 +36,7 @@ const Header = () => {
     <Container>
       <Wrapper>
         <Logo>.CodeLab Hotel</Logo>
+
         {currentUser ? (
           <Navigation>
             <Nav to="/">
@@ -42,12 +45,7 @@ const Header = () => {
               </Icon>
               <span>Home</span>
             </Nav>
-            <Nav to="/bookings">
-              <Icon>
-                <AiFillBook />
-              </Icon>
-              <span>Bookings</span>
-            </Nav>
+
             <Nav to="/detail">
               <Icon>
                 <AiFillPieChart />
@@ -62,6 +60,16 @@ const Header = () => {
             </Nav>
           </Navigation>
         ) : null}
+        <Navigation>
+          {" "}
+          <Nav to="/bookings">
+            <Icon>
+              <AiFillBook />
+            </Icon>
+            <span>Bookings</span>
+            <span>tl Rooms: {room.length}</span>
+          </Nav>
+        </Navigation>
         <Space />
         {currentUser ? (
           <Action>

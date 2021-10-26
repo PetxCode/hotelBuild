@@ -37,9 +37,68 @@ const hotelState = createSlice({
     removeBooking: (state, { payload }) => {
       state.bookings = state.bookings.filter((fl) => fl.id !== payload.id);
     },
+
+    // totalState: (state, { payload }) => {
+    //   let { totalBookingsCost, totalRoomBooked } = state.bookings.reduce(
+    //     (totalBookings, mainBooking) => {
+    //       const { price, QTY } = mainBooking;
+
+    //       const totalCost = price * QTY;
+
+    //       mainBooking.totalBookings += totalCost;
+    //       mainBooking.QTY += totalBookings;
+
+    //       return totalBookings;
+    //     },
+    //     { totalBookingsCost: 0, totalRoomBooked: 0 }
+    //   );
+
+    //   state.bookingCost = totalBookingsCost;
+    //   state.bookingRoom = totalRoomBooked;
+    // },
+
+    // totalState: (state, { payload }) => {
+    //   let { totalCost, totalDays } = state.bookings.reduce(
+    //     (totalRoomCost, bookingState) => {
+    //       const { price, QTY } = bookingState;
+    //       const totalPrice = price * QTY;
+
+    //       totalRoomCost.totalDays += QTY;
+    //       totalRoomCost.totalCost += totalPrice;
+
+    //       return totalRoomCost;
+    //     },
+    //     { totalCost: 0, totalDays: 0 }
+    //   );
+
+    //   state.totalValuePrice = totalCost;
+    //   state.totalValueQTY = totalDays;
+    // },
+
+    totalState: (state, { payload }) => {
+      const { totalCost, totalDays } = state.bookings.reduce(
+        (totalPrice, allBookings) => {
+          const { price, QTY } = allBookings;
+
+          const mainCost = price * QTY;
+
+          totalPrice.totalDays += QTY;
+          totalPrice.totalCost += mainCost;
+
+          return totalPrice;
+        },
+        {
+          totalCost: 0,
+          totalDays: 0,
+        }
+      );
+
+      state.tatalRoomCost = totalCost;
+      state.totalRoomDays = totalDays;
+    },
   },
 });
 
-export const { addBooking, addHotel, removeBooking, changeDays } =
+export const { addBooking, addHotel, removeBooking, changeDays, totalState } =
   hotelState.actions;
 export default hotelState.reducer;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { app } from "./../../base";
+import { app } from "../../base";
 import firebase from "firebase";
 import { useHistory } from "react-router-dom";
 import imgAvatar from "./avatar.png";

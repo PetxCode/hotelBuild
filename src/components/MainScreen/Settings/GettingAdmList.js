@@ -251,22 +251,23 @@ const GettingAdmList = () => {
                       </Locate>
                     </Holder>
 
-                    {/* {myList1?.isHotel.empty ? ( */}
-                    <ButtonB>
-                      <Button
-                        // disabled={true}
-                        bg="#004080"
-                        onClick={() => {
-                          createNewHotel();
-                        }}
-                      >
-                        Create a New Hotel
-                      </Button>
-                    </ButtonB>
-                    {/* ) : (
+                    {myList1?.length === 0 ? (
                       <ButtonB>
                         <Button
+                          // disabled={true}
                           bg="#004080"
+                          onClick={() => {
+                            createNewHotel();
+                          }}
+                        >
+                          Create a New Hotel 24
+                        </Button>
+                        start
+                      </ButtonB>
+                    ) : (
+                      <ButtonB>
+                        <Button
+                          bg="red"
                           onClick={() => {
                             createNewHotel();
                           }}
@@ -275,7 +276,9 @@ const GettingAdmList = () => {
                         </Button>
                         end
                       </ButtonB>
-                    )} */}
+                    )}
+
+                    {!myList?.length === 0 ? <div>Hello</div> : <div>End</div>}
                   </Form>
                 </CardForm>
                 <Title>
