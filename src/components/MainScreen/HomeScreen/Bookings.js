@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
@@ -6,80 +6,133 @@ import {
   removeBooking,
   changeDays,
   addBooking,
+  totalState,
 } from "../../../Global/hotelState";
 import { useHistory } from "react-router-dom";
+import { usePaystackPayment } from "react-paystack";
 
 const Bookings = () => {
   const bookingState = useSelector((state) => state.myReducer.bookings);
+  const totalCostState = useSelector((state) => state.myReducer.tatalRoomCost);
+  const totalRoomState = useSelector((state) => state.myReducer.totalRoomDays);
+
+  const [total, setTotal] = React.useState(totalCostState);
+
+  console.log(total);
   const dispatch = useDispatch();
   const hist = useHistory();
+
+  const config = {
+    reference: new Date().getTime().toString(),
+    email: "user@example.com",
+    amount: totalCostState * 100,
+    // publicKey: "pk_test_d632bf4b9aa1e74745eb158cec8034961dc13b18",
+    publicKey: "pk_live_2732df7378e84dbe0013bb9fd7f00faad438e244",
+  };
+
+  const onSuccess = (reference) => {
+    hist.push("/");
+    console.log(reference);
+  };
+
+  const onClose = () => {
+    const say = "This Transition wasn't successful";
+    console.log(say);
+  };
+
+  const initializePayment = usePaystackPayment(config);
+
+  useEffect(() => {
+    dispatch(totalState());
+  }, [bookingState]);
 
   return (
     <Container>
       <Wrapper>
         <Card>
+          <ContainerCard>
+            <SubMainCard>
+              <Holder>
+                <Label>Total Cost</Label>
+                <Result>{totalCostState}</Result>
+              </Holder>
+              <Holder>
+                <Label>Total No of Days</Label>
+                <Result>{totalRoomState}</Result>
+              </Holder>
+              <PayButton
+                onClick={() => {
+                  initializePayment(onSuccess, onClose);
+                }}
+              >
+                Pay Now
+              </PayButton>
+            </SubMainCard>
+          </ContainerCard>
           <CardHolder>
             {bookingState.map((props, i) => (
-              <MainCard key={i}>
-                <Image src={props.roomImage1} />
-                <Content>
-                  <Title>{props.hotelNumb}</Title>
-                  <Desc>{props.desc}</Desc>
+              <MainHolder>
+                <MainCard key={i}>
+                  <Image src={props.roomImage1} />
+                  <Content>
+                    <Title>{props.hotelNumb}</Title>
+                    <Desc>{props.desc}</Desc>
 
-                  <Hold>
-                    <Icon
-                      cl="red"
-                      onClick={() => {
-                        dispatch(changeDays(props));
-                        console.log("Hello");
-                      }}
-                    >
-                      <AiFillMinusCircle />
-                    </Icon>
-                    <Holder>
-                      <Label>No of Days</Label>
-                      <Result>{props.QTY}</Result>
-                    </Holder>
-                    <Icon
-                      cl="green"
-                      onClick={() => {
-                        dispatch(addBooking(props));
-                      }}
-                    >
-                      <AiFillPlusCircle />
-                    </Icon>
-                  </Hold>
-                  <Hold>
-                    <Space />
-                  </Hold>
-                  <Hold1>
-                    <Holder>
-                      <Label>Price</Label>
-                      <Result>#{parseInt(props.price) * props.QTY}</Result>
-                    </Holder>
+                    <Hold>
+                      <Icon
+                        cl="red"
+                        onClick={() => {
+                          dispatch(changeDays(props));
+                          console.log("Hello");
+                        }}
+                      >
+                        <AiFillMinusCircle />
+                      </Icon>
+                      <Holder>
+                        <Label>No of Days</Label>
+                        <Result>{props.QTY}</Result>
+                      </Holder>
+                      <Icon
+                        cl="green"
+                        onClick={() => {
+                          dispatch(addBooking(props));
+                        }}
+                      >
+                        <AiFillPlusCircle />
+                      </Icon>
+                    </Hold>
+                    <Hold>
+                      <Space />
+                    </Hold>
+                    <Hold1>
+                      <Holder>
+                        <Label>Price</Label>
+                        <Result>#{props.price * props.QTY}</Result>
+                      </Holder>
 
-                    <Holder>
-                      <Label>Category</Label>
-                      <Result>{props.category}</Result>
-                    </Holder>
+                      <Holder>
+                        <Label>Category</Label>
+                        <Result>{props.category}</Result>
+                      </Holder>
 
-                    <Holder>
-                      <Label>Location</Label>
-                      <Result>Ajegunle</Result>
-                    </Holder>
-                  </Hold1>
+                      <Holder>
+                        <Label>Location</Label>
+                        <Result>Ajegunle</Result>
+                      </Holder>
+                    </Hold1>
 
-                  <Hold>
-                    <Button
-                      onClick={() => {
-                        dispatch(removeBooking(props));
-                      }}
-                    >
-                      Cancel Bookings
-                    </Button>
-                  </Hold>
-                </Content>
-              </MainCard>
+                    <Hold>
+                      <Button
+                        onClick={() => {
+                          dispatch(removeBooking(props));
+                        }}
+                      >
+                        Cancel Bookings
+                      </Button>
+                    </Hold>
+                  </Content>
+                </MainCard>
+              </MainHolder>
             ))}
           </CardHolder>
         </Card>
@@ -89,8 +142,58 @@ const Bookings = () => {
 };
 
 export default Bookings;
+const ContainerCard = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
 
-// const Container = styled.div``
+const MainHolder = styled.div`
+  padding-top: 200px;
+`;
+
+const SubMainCard = styled.div`
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 90%;
+  height: 100px;
+  margin: 50px auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: fixed;
+  /* left: 150px; */
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+`;
+const PayButton = styled.div`
+  color: white;
+  background-color: #004080;
+  width: 20%;
+  height: 60px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 5px;
+  transition: all 350ms;
+  transform: scale(1);
+  :hover {
+    transform: scale(0.97);
+    cursor: pointer;
+  }
+`;
+const SubCard = styled.div`
+  width: 300px;
+  height: 500px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+`;
+const Details = styled.div``;
 
 const Space = styled.div`
   width: 80%;
@@ -196,6 +299,7 @@ const CardHolder = styled.div`
   justify-content: center;
 `;
 const MainCard = styled.div`
+  /* margin-top: 150px; */
   width: 300px;
   min-height: 350px;
   padding-bottom: 20px;

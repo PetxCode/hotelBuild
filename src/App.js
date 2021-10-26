@@ -7,6 +7,7 @@ import HomeDetail from "./components/MainScreen/HomeScreen/HomeDetail";
 import Bookings from "./components/MainScreen/HomeScreen/Bookings";
 import { Register } from "./components/Registration/Registration";
 import PrivateRoute from "./components/Registration/PrivateRoute";
+import Payment from "./components/MainScreen/HomeScreen/Payment";
 
 function App() {
   return (
@@ -15,9 +16,10 @@ function App() {
       <Switch>
         <Route path="/" exact component={HomeScreen} />
         <PrivateRoute path="/setting" exact component={GettingAdmList} />
-        <PrivateRoute path="/detail/:id" exact component={HomeDetail} />
-        <PrivateRoute path="/bookings" exact component={Bookings} />
+        <Route path="/detail/:id" exact component={HomeDetail} />
+        <Route path="/bookings" exact component={Bookings} />
         <Route path="/register" exact component={Register} />
+        <Route path="/pay" exact component={Payment} />
       </Switch>
     </Router>
   );
